@@ -1,0 +1,45 @@
+version: '3.1'
+
+services:
+
+  postgres:
+    build:
+      context: ./dockerfile
+      dockerfile: Dockerfile
+    image: postgres
+    container_name: postgres
+    restart: always
+    tty: true
+    environment:
+      POSTGRES_USER: orchestrationtemplate
+      POSTGRES_PASSWORD: orchestrationtemplate
+      POSTGRES_DB: orchestrationtemplate
+      POSTGRES_INITDB_ARGS: '--encoding=UTF-8 --lc-collate=es_ES --lc-ctype=es_ES'
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+    - 5432:5432
+    networks:
+      - development
+    volumes: 
+      - ./volumes:/docker-entrypoint-initdb.d
+      - data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "icaro_rique123@hotmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "123456"
+    ports:
+      - "16543:80"
+    depends_on:
+      - postgres
+    networks:
+      - development
+
+volumes:
+    data:
+
+networks:
+    development:
+        driver: bridge

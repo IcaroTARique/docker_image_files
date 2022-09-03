@@ -1,0 +1,39 @@
+version: '3'
+services:
+    phpmyadmin: 
+        image: phpmyadmin:latest
+        container_name: phpmyadmin
+        ports:
+            - "8888:80"
+        depends_on:
+            - mysql
+        networks:
+            - development
+        environment:
+            PMA_HOSTS: mysql
+        
+    mysql:
+        build:
+            context: ./ 
+            dockerfile: ./dockerfile/mysql.dockerfile
+        image: mysql
+        container_name: mysql
+        environment:
+            MYSQL_USER: admin
+            MYSQL_PASSWORD: admin
+            MYSQL_ROOT_PASSWORD: admin
+            MYSQL_DATABASE: sakila
+        ports:
+            - "3306:3306"
+        volumes:
+            -  mysql_data:/var/lib/mysql
+            -  ./volume:/docker-entrypoint-initdb.d
+        networks:
+            - development
+
+volumes:
+    mysql_data:
+
+networks:
+    development:
+        driver: bridge
